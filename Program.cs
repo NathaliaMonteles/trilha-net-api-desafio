@@ -8,6 +8,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<OrganizadorContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoPadrao")));
 
+// Adiciona suporte para CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        builder =>
+        {
+            builder.AllowAnyOrigin()  // Permite qualquer origem
+                   .AllowAnyMethod()  // Permite qualquer método (GET, POST, etc.)
+                   .AllowAnyHeader(); // Permite qualquer cabeçalho
+        });
+});
+
 builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
@@ -25,6 +37,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Adiciona o middleware CORS
+app.UseCors("AllowAllOrigins");
 
 app.UseAuthorization();
 
